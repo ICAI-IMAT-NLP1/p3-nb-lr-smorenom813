@@ -28,11 +28,11 @@ def read_sentiment_examples(infile: str) -> List[SentimentExample]:
 
         for line in file.readlines():
             clean = line.rstrip()
-            splitted = clean.split("\t")
 
-            label = splitted[-1]
 
-            text = splitted[0]
+            label = clean[-1]
+
+            text = clean[:-1]
             words = tokenize(text)
             examples.append(SentimentExample(words,int(label)))
     return examples
@@ -80,12 +80,12 @@ def bag_of_words(
     """
     # TODO: Converts list of words into BoW, take into account the binary vs full
     bow: torch.Tensor = torch.zeros(len(vocab))
-    for word, index in vocab.items():
-        if word in text:
+    for word in text:
+        if word in vocab.keys():
             if not binary:
-                bow[index] = text.count(word)
+                bow[vocab[word]] += 1
             else:
-                bow[index] = 1
+                bow[vocab[word]] = 1
 
     return bow
 

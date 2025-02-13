@@ -48,7 +48,7 @@ class NaiveBayes:
         list_labels = labels.tolist()
         counter = Counter(list_labels)
         total_samples = sum(counter.values())
-        class_priors: Dict[int, torch.Tensor] = {key: torch.tensor(value/total_samples) for key, value in counter.items() }
+        class_priors: Dict[int, torch.Tensor] = {int(key): torch.tensor(value/total_samples) for key, value in counter.items() }
 
         return class_priors
 
@@ -104,13 +104,16 @@ class NaiveBayes:
         log_posteriors: torch.Tensor = torch.empty((len(self.class_priors)))
 
         for label, prior in self.class_priors.items():
-            posterior = prior
-            for i in range(len(self.conditional_probabilities[label])):
-                if feature[i] == 1:
-                    posterior*=self.conditional_probabilities[label][i]
-            log_posteriors[label] = torch.log(posterior)
+            
+            log_posterior = torch.log(prior)
 
+           
+            cond_probs = torch.tensor(self.conditional_probabilities[label])
 
+            
+            log_posterior += torch.sum(torch.log(cond_probs) * feature)
+
+            log_posteriors[label] = log_posterior
 
         return log_posteriors
 

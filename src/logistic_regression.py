@@ -34,25 +34,25 @@ class LogisticRegression:
         """
         # TODO: Implement gradient-descent algorithm to optimize logistic regression weights
         print(features.size())
-        data = self.initialize_parameters(features.size(0),self.random_state)
+        data = self.initialize_parameters(features.size(1),self.random_state)
         self.weights = data #[:-1]
         #bias = data[-1]
         for i in range(epochs):
             delta_weights = torch.zeros(self.weights[:-1].size())
             delta_bias = torch.zeros(self.weights[-1].size())
-
+            probs = self.predict_proba(features)
+            i = 0
             for feature, label in zip(features,labels):
                 
-
-                prob = self.sigmoid(self.weights[:-1] @ feature + self.weights[-1])
                 
 
-                delta_weights += (prob- label)*(feature/features.shape[0])
-                delta_bias += (prob-label)/features.shape[0]
+                delta_weights += (probs[i]- label)*(feature/features.shape[0])
+                delta_bias += (probs[i]-label)/features.shape[0]
+                i+= 1
 
             self.weights[:-1] -=  learning_rate*delta_weights
             self.weights[-1] -= learning_rate*delta_bias
-            print(self.weights)
+
 
         
         
